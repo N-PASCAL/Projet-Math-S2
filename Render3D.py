@@ -124,8 +124,8 @@ def renderPlane():
     ax = fig.add_subplot(111, projection='3d')
 
     cylindre_plein(ax, R=2.0, h=26, center=(-13, 0, 0))
-    draw_cone(ax, length=6.5, radius=2.0, center=(-13, 0, 0), direction='x', reverse=True)
-    draw_cone(ax, length=7.0, radius=2.0, center=(13, 0, 0), direction='x')
+    draw_cone(ax, length=7.0, radius=2.0, center=(-13, 0, 0), direction='x', reverse=True)
+    draw_cone(ax, length=6.5, radius=2.0, center=(13, 0, 0), direction='x')
 
     draw_wing(ax, origin=(0, 0, -17), span=15.0, front_length=5.5, back_length=2.75, thickness=0.5, side='left')
     draw_wing(ax, origin=(0, 0, 17), span=15.0, front_length=5.5, back_length=2.75, thickness=0.5, side='right')
