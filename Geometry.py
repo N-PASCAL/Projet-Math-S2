@@ -47,6 +47,61 @@ class Geometry:
         return Geometry.transpose(W)
 
     @staticmethod
+    def trapeze_plein(n, base_large, base_etroite, hauteur, epaisseur):
+        W = []
+        n2 = int(n ** (1 / 3))
+        for i in range(n2):
+            for j in range(n2):
+                for k in range(n2):
+                    ratio = i / n2  
+                    largeur = base_large * (1 - ratio) + base_etroite * ratio
+                    y = -largeur / 2 + largeur * j / n2
+                    z = -epaisseur / 2 + epaisseur * k / n2
+                    x = -hauteur / 2 + hauteur * i / n2
+                    W.append([x, y, z])
+        return Geometry.transpose(W)
+
+    @staticmethod
+    def trapeze_volume(n, p1, p2, p3, p4, epaisseur):
+        def vec_add(a, b): return [a[i] + b[i] for i in range(3)]
+        def vec_sub(a, b): return [a[i] - b[i] for i in range(3)]
+        def vec_scale(a, s): return [a[i] * s for i in range(3)]
+        def vec_dot(a, b): return sum(a[i] * b[i] for i in range(3))
+        def vec_cross(a, b):
+            return [
+                a[1]*b[2] - a[2]*b[1],
+                a[2]*b[0] - a[0]*b[2],
+                a[0]*b[1] - a[1]*b[0]
+            ]
+        def vec_norm(v): return sum(x**2 for x in v) ** 0.5
+        def vec_normalize(v):
+            norm = vec_norm(v)
+            return [x / norm for x in v] if norm != 0 else [0, 0, 0]
+
+        n2 = int(n ** (1/3))
+        W = []
+
+        for i in range(n2):
+            for j in range(n2):
+                t1 = j / (n2 - 1)
+                t2 = i / (n2 - 1)
+
+                A = vec_add(vec_scale(p1, 1 - t1), vec_scale(p2, t1))
+                B = vec_add(vec_scale(p4, 1 - t1), vec_scale(p3, t1))
+                point_surface = vec_add(vec_scale(A, 1 - t2), vec_scale(B, t2))
+
+                normal = vec_cross(vec_sub(p2, p1), vec_sub(p4, p1))
+                normal = vec_normalize(normal)
+
+                for k in range(n2):
+                    depth = -epaisseur / 2 + epaisseur * k / n2
+                    P = vec_add(point_surface, vec_scale(normal, depth))
+                    W.append(P)
+
+        return Geometry.transpose(W)
+
+
+    @staticmethod
     def solide(n):
         # Proportions des différentes parties
         n_fuselage = int(n * 0.4)
