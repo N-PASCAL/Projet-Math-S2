@@ -144,6 +144,6 @@ print("I déplacée de G vers A =\n", phys.deplace_mat(I, m, G, A))
 
 (X, Y, Z) = Geometry.solide(10000)
 fig = plt.figure()
-ax = plt.axes(projection='Tkt il vole')
+ax = plt.axes(projection='3d')
 ax.scatter3D(X, Y, Z, c=Z, cmap='plasma')
 plt.show()
