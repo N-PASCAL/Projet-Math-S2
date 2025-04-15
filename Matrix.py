@@ -1,5 +1,3 @@
-from Tools import cos, sin
-
 class Matrix:
     def __init__(self, data):
         # Vérifie que toutes les lignes ont la même longueur
@@ -121,46 +119,6 @@ class Matrix:
             lignes.append(texte)
         return "\n".join(lignes)
     
-    def rotate(self, axis, angle):
-        if self.shape()[0] != 3:
-            raise ValueError("La rotation ne s'applique qu'aux matrices 3×n")
-
-        c = cos(angle)
-        s = sin(angle)
-
-        if axis == 'x':
-            R = Matrix([
-                [1, 0, 0],
-                [0, c, -s],
-                [0, s, c]
-            ])
-        elif axis == 'y':
-            R = Matrix([
-                [c, 0, s],
-                [0, 1, 0],
-                [-s, 0, c]
-            ])
-        elif axis == 'z':
-            R = Matrix([
-                [c, -s, 0],
-                [s, c, 0],
-                [0, 0, 1]
-            ])
-        else:
-            raise ValueError("Axe inconnu : choisir 'x', 'y' ou 'z'")
-
-        return R * self 
-
-    def translate(self, dx=0, dy=0, dz=0):
-        if self.shape()[0] != 3:
-            raise ValueError("La translation ne s'applique qu'à une matrice 3×n")
-
-        X, Y, Z = self.data
-        X = [x + dx for x in X]
-        Y = [y + dy for y in Y]
-        Z = [z + dz for z in Z]
-        return Matrix([X, Y, Z])
-
 
 
 def transpose(A):

@@ -7,9 +7,6 @@ from Point import Point
 from Geometry import Geometry
 from Physics import Physics
 
-from Solide import plot_solide, interactive_plot
-
-from Render3D import renderPlane
 
 #-----------------------------------------------------------------------------------------------------------------#
 """ 
@@ -140,11 +137,13 @@ G = Point([0, 0, 0])
 A = Point([1, 0, 0])
 print("I déplacée de G vers A =\n", phys.deplace_mat(I, m, G, A))
 """
-
 #-----------------------------------------------------------------------------------------------------------------#
 
 
-# renderPlane()
-# plot_solide(10000)
 
-interactive_plot(10000)
+
+(X, Y, Z) = Geometry.solide(10000)
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+ax.scatter3D(X, Y, Z, c=Z, cmap='plasma')
+plt.show()
