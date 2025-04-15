@@ -11,7 +11,7 @@ class Matrix:
     def shape(self):
         nb_lignes = len(self.data)
         nb_colonnes = len(self.data[0])
-        return (nb_lignes, nb_colonnes)
+        return nb_lignes, nb_colonnes
 
     # Transpose la matrice 
     def transpose(self):
@@ -94,8 +94,8 @@ class Matrix:
         if d == 0:
             raise ValueError("La matrice n'est pas inversible.")
         comatrice = self.comatrix()
-        transposée = comatrice.transpose()
-        inverse = transposée * (1 / d)
+        transposee = comatrice.transpose()
+        inverse = transposee * (1 / d)
         return inverse
 
     # Supprime une ligne et une colonne d'une matrice
