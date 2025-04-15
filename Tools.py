@@ -42,6 +42,7 @@ class Tools:
     @staticmethod
     def rad2deg(rad):
         return rad * 180 / Tools.pi
+    
 
 pi = Tools.pi
 sin = Tools.sin

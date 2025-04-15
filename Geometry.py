@@ -37,9 +37,10 @@ class Geometry:
         dteta = 2 * pi / n2
         dz = h / n2
         zmin = -h / 2
-        for r in range(n2):
-            for teta in range(n2):
-                for z in range(n2):
+
+        for z in range(n2):
+            for r in range(1, n2): 
+                for teta in range(n2):
                     x = r * dr * cos(dteta * teta)
                     y = r * dr * sin(dteta * teta)
                     z_val = z * dz + zmin
