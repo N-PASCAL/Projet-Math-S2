@@ -123,17 +123,17 @@ def renderPlane():
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    cylindre_plein(ax, R=2.0, h=39.5, center=(-19.75, 0, 0))
-    draw_cone(ax, length=6.5, radius=2.0, center=(-19.75, 0, 0), direction='x', reverse=True)
-    draw_cone(ax, length=7.0, radius=2.0, center=(19.75, 0, 0), direction='x')
+    cylindre_plein(ax, R=2.0, h=26, center=(-13, 0, 0))
+    draw_cone(ax, length=6.5, radius=2.0, center=(-13, 0, 0), direction='x', reverse=True)
+    draw_cone(ax, length=7.0, radius=2.0, center=(13, 0, 0), direction='x')
 
-    draw_wing(ax, origin=(0, 0, 5), span=3.0, front_length=15.0, back_length=13.5, thickness=0.5, side='right')
-    draw_wing(ax, origin=(0, 0, -5), span=3.0, front_length=15.0, back_length=13.5, thickness=0.5, side='left')
+    draw_wing(ax, origin=(0, 0, -17), span=15.0, front_length=5.5, back_length=2.75, thickness=0.5, side='left')
+    draw_wing(ax, origin=(0, 0, 17), span=15.0, front_length=5.5, back_length=2.75, thickness=0.5, side='right')
 
-    draw_wing(ax, origin=(-19.75, 0, 4), span=2.5, front_length=6.5, back_length=5.5, thickness=0.5, side='right')
-    draw_wing(ax, origin=(-19.75, 0, -4), span=2.5, front_length=6.5, back_length=5.5, thickness=0.5, side='left')
+    draw_wing(ax, origin=(-13, 0, -8.5), span=6.5, front_length=2.5, back_length=1.25, thickness=0.5, side='left')
+    draw_wing(ax, origin=(-13, 0, 8.5), span=6.5, front_length=2.5, back_length=1.25, thickness=0.5, side='right')
 
-    draw_wing_top(ax, origin=(-19.75, 5, 0), span=4.0, front_length=5.0, back_length=4.5, thickness=0.5)
+    draw_wing_top(ax, origin=(-13, 7, 0), span=5.0, front_length=5.5, back_length=2.75, thickness=0.5)
 
     ax.quiver(0, 0, 0, 20, 0, 0, color='red')
     ax.quiver(0, 0, 0, 0, 20, 0, color='blue')
