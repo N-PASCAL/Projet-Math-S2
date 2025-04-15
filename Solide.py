@@ -32,6 +32,18 @@ def generate_prism(n, a, b, c, offset=(0,0,0)):
         P[2][i] += offset[2]
     return P
 
+def generate_trapeze(n, base_large, base_etroite, hauteur, epaisseur, offset=(0,0,0)):
+    T = Geometry.trapeze_plein(n, base_large, base_etroite, hauteur, epaisseur)
+    for i in range(len(T[0])):
+        T[0][i] += offset[0]
+        T[1][i] += offset[1]
+        T[2][i] += offset[2]
+    return T
+
+def generate_trapeze_custom(n, p1, p2, p3, p4, epaisseur):
+    T = Geometry.trapeze_volume(n, p1, p2, p3, p4, epaisseur)
+    return T
+
 def solide(n):
     unit = n // 17  
 
@@ -47,23 +59,18 @@ def solide(n):
     print("n_empennages =", n_empennages)
     print("n_derive =", n_derive)
 
-
-
     fuselage = generate_fuselage(n_fuselage)
 
     cone_av = generate_cone(n_cones, length=6.5, R=2.0, reverse=True, offset=-13)
     cone_ar = generate_cone(n_cones, length=7.0, R=2.0, reverse=False, offset=12)
 
-    aile_g = generate_prism(n_ailes, 5.5, 15.0, 0.5, offset=(0, 10, 0))  
-    aile_d = generate_prism(n_ailes, 5.5, 15.0, 0.5, offset=(0, -8, 0))   
+    aile_g = generate_trapeze_custom(n_ailes, p1=[0, 2, 0], p2=[5.5, 2, 0], p3=[2.75, 13.5, 0], p4=[0, 15, 0], epaisseur=0.5)
+    aile_d = generate_trapeze_custom(n_ailes, p1=[0, -2, 0], p2=[5.5, -2, 0], p3=[2.75, -13.5, 0], p4=[0, -15, 0], epaisseur=0.5)
 
+    emp_g = generate_trapeze_custom(n_empennages, p1=[-13, 2, 0], p2=[-10.5, 2, 0], p3=[-11.75, 5.5, 0], p4=[-13, 6.5, 0], epaisseur=0.5)
+    emp_d = generate_trapeze_custom(n_empennages, p1=[-13, -2, 0], p2=[-10.5, -2, 0], p3=[-11.75, -5.5, 0], p4=[-13, -6.5, 0], epaisseur=0.5)
 
-    emp_g = generate_prism(n_empennages, 2.5, 6.5, 0.5, offset=(-12, 6, -0))
-    emp_d = generate_prism(n_empennages, 2.5, 6.5, 0.5, offset=(-12, -6, 0))
-
-
-    derive = generate_prism(n_derive, 5.5, 0.5, 4.375, offset=(-11, 0, 4))
-
+    derive = generate_trapeze_custom(n_derive, p1=[-13, 0, 2], p2=[-13, 0, 7], p3=[-10.25, 0, 5.75], p4=[-7.5, 0, 2], epaisseur=0.5)
 
     all_parts = [fuselage, cone_av, cone_ar, aile_g, aile_d, emp_g, emp_d, derive]
     X, Y, Z = [], [], []
@@ -76,6 +83,8 @@ def solide(n):
 
 def plot_solide(n):
     M = solide(n)
+    M = M.rotate('z', pi / 4) 
+
     X, Y, Z = M.data
 
     fig = plt.figure()
@@ -95,3 +104,60 @@ def plot_solide(n):
 
     plt.tight_layout()
     plt.show()
+
+
+
+#-----------------------------------------------------------------------------------------------------------------#
+
+def interactive_plot(n):
+    M = solide(n)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    scatter = ax.scatter3D(*M.data, c=M.data[2], cmap='plasma', s=0.5)
+
+    def update_display():
+        X, Y, Z = M.data
+        scatter._offsets3d = (X, Y, Z)
+        fig.canvas.draw_idle()
+
+    def on_key(event):
+        nonlocal M
+        angle = pi / 36 
+        step = 1.0     
+        
+        match event.key:
+            case 'left':
+                M = M.rotate('z', angle)
+            case 'right':
+                M = M.rotate('z', -angle)
+            case 'up':
+                M = M.rotate('y', angle)
+            case 'down':
+                M = M.rotate('y', -angle)
+            case '5':
+                M = M.translate(dx=step)
+            case '2':
+                M = M.translate(dx=-step)
+            case '1':
+                M = M.translate(dy=step)
+            case '3':
+                M = M.translate(dy=-step)
+            case 'r':
+                M = solide(n)
+            case _:
+                return  
+
+        update_display()
+
+
+    ax.set_box_aspect([55, 40, 10])  
+    ax.set_xlim(-30, 30)
+    ax.set_ylim(-25, 25) 
+    ax.set_zlim(-5, 5)
+
+    fig.canvas.mpl_connect('key_press_event', on_key)
+    plt.title("Utilise les flèches pour faire pivoter l'avion")
+    plt.show()
+
+#-----------------------------------------------------------------------------------------------------------------#
