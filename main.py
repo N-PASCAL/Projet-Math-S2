@@ -143,8 +143,10 @@ print("I déplacée de G vers A =\n", phys.deplace_mat(I, m, G, A))
 
 #-----------------------------------------------------------------------------------------------------------------#
 
-
 # renderPlane()
 # plot_solide(10000)
 
 interactive_plot(10000)
+
+
+

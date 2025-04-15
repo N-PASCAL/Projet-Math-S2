@@ -64,29 +64,40 @@ class Geometry:
 
     @staticmethod
     def trapeze_volume(n, p1, p2, p3, p4, epaisseur):
-        from Vectors import Vector
-        from Point import Point
+        def vec_add(a, b): return [a[i] + b[i] for i in range(3)]
+        def vec_sub(a, b): return [a[i] - b[i] for i in range(3)]
+        def vec_scale(a, s): return [a[i] * s for i in range(3)]
+        def vec_dot(a, b): return sum(a[i] * b[i] for i in range(3))
+        def vec_cross(a, b):
+            return [
+                a[1]*b[2] - a[2]*b[1],
+                a[2]*b[0] - a[0]*b[2],
+                a[0]*b[1] - a[1]*b[0]
+            ]
+        def vec_norm(v): return sum(x**2 for x in v) ** 0.5
+        def vec_normalize(v):
+            norm = vec_norm(v)
+            return [x / norm for x in v] if norm != 0 else [0, 0, 0]
 
-        P1, P2, P3, P4 = [Vector(p) if not isinstance(p, Vector) else p for p in [p1, p2, p3, p4]]
-        
         n2 = int(n ** (1/3))
         W = []
 
-        for i in range(n2):  
-            for j in range(n2):  
+        for i in range(n2):
+            for j in range(n2):
                 t1 = j / (n2 - 1)
                 t2 = i / (n2 - 1)
 
-                A = P1 * (1 - t1) + P2 * t1
-                B = P4 * (1 - t1) + P3 * t1
+                A = vec_add(vec_scale(p1, 1 - t1), vec_scale(p2, t1))
+                B = vec_add(vec_scale(p4, 1 - t1), vec_scale(p3, t1))
+                point_surface = vec_add(vec_scale(A, 1 - t2), vec_scale(B, t2))
 
-                point_surface = A * (1 - t2) + B * t2
+                normal = vec_cross(vec_sub(p2, p1), vec_sub(p4, p1))
+                normal = vec_normalize(normal)
 
-                for k in range(n2):  
-                    normal = (P2 - P1).cross(P4 - P1).normalize()
+                for k in range(n2):
                     depth = -epaisseur / 2 + epaisseur * k / n2
-                    P = point_surface + normal * depth
-                    W.append(P.coords)
+                    P = vec_add(point_surface, vec_scale(normal, depth))
+                    W.append(P)
 
         return Geometry.transpose(W)
 
