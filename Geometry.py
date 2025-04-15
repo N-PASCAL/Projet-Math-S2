@@ -53,8 +53,15 @@ class Geometry:
         n_ailes = int(n * 0.3)
         n_queue = int(n * 0.3)
 
-        # Fuselage central : cylindre long et fin
+        # Fuselage central : cylindre long et fin, initialement orienté sur Z
         fuselage = Geometry.cylindre(n_fuselage, R=0.3, h=4)
+
+        # Rotation du fuselage pour l’orienter sur l’axe X
+        for i in range(len(fuselage[0])):
+            v = Vector([fuselage[0][i], fuselage[1][i], fuselage[2][i]])
+            v_rotated = v.rotate('y', -pi / 2)
+            fuselage[0][i], fuselage[1][i], fuselage[2][i] = v_rotated.coords
+
 
         # Ailes : pavés plats, décalés sur l'axe Y
         ailes_gauche = Geometry.pave_plein(n_ailes // 2, a=2, b=0.1, c=0.02)
