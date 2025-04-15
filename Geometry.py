@@ -1,4 +1,3 @@
-from Vectors import Vector
 from Tools import *
 class Geometry:
 
