@@ -101,36 +101,6 @@ class Geometry:
 
         return Geometry.transpose(W)
 
-
-    @staticmethod
-    def solide(n):
-        n_fuselage = int(n * 0.4)
-        n_ailes = int(n * 0.3)
-        n_queue = int(n * 0.3)
-
-        fuselage = Geometry.cylindre(n_fuselage, R=0.3, h=4)
-
-        ailes_gauche = Geometry.pave_plein(n_ailes // 2, a=2, b=0.1, c=0.02)
-        ailes_droite = Geometry.pave_plein(n_ailes // 2, a=2, b=0.1, c=0.02)
-
-        for i in range(len(ailes_gauche[0])):
-            ailes_gauche[1][i] -= 0.4  
-            ailes_gauche[2][i] -= 0.5  
-        for i in range(len(ailes_droite[0])):
-            ailes_droite[1][i] += 0.4  
-            ailes_droite[2][i] -= 0.5  #
-
-        queue = Geometry.pave_plein(n_queue, a=0.1, b=0.02, c=0.6)
-        for i in range(len(queue[0])):
-            queue[0][i] -= 1.8 
-            queue[2][i] += 0.5  
-
-        X = fuselage[0] + ailes_gauche[0] + ailes_droite[0] + queue[0]
-        Y = fuselage[1] + ailes_gauche[1] + ailes_droite[1] + queue[1]
-        Z = fuselage[2] + ailes_gauche[2] + ailes_droite[2] + queue[2]
-
-        return [X, Y, Z]
-
     def center_of_mass(self, points, masses):
         if len(points) != len(masses):
             raise ValueError("Le nombre de points doit être égal au nombre de masses")
