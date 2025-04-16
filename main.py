@@ -1,5 +1,5 @@
 from Solide import interactive_plot
 
-interactive_plot(10000)
+interactive_plot(100000)
 
 
