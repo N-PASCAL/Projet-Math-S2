@@ -64,6 +64,43 @@ print("rad2deg(pi) =", rad2deg(pi))
 
 """
 # -----------------------------------------------
+# GEOMETRY UTILS
+"""
+geo = Geometry()
+points = [p1, p2]
+masses = [2, 3]
+print("Centre d'inertie =", geo.center_of_mass(points, masses))
+print("Moment de v1 appliqué en v2 =", geo.moment(v1, v2))
+print("Triple scalaire (v1, v2, v1 + v2) =", geo.triple_scalar(v1, v2, v1 + v2))
+print("v1 et v2 colinéaires ? ", geo.is_colinear(v1, v2))
+"""
 
-plot_solide(100000)
+# -----------------------------------------------
+# PHYSICS UTILS
+"""
+phys = Physics()
+F = Vector([10, 0, 0])
+m = 5
+print("a = F/m =", phys.acceleration(F, m))
+
+I = Matrix([[2, 0, 0], [0, 3, 0], [0, 0, 4]])
+M = Vector([0, 0, 10])
+print("alpha = I⁻¹ * M =\n", phys.angular_acceleration(M, I))
+
+G = Point([0, 0, 0])
+A = Point([1, 0, 0])
+print("I déplacée de G vers A =\n", phys.deplace_mat(I, m, G, A))
+"""
+
+#-----------------------------------------------------------------------------------------------------------------#
+
+
+
+# renderPlane()
+# plot_solide(10000)
+
+interactive_plot(10000)
+
+
+#plot_solide(100000)
 
