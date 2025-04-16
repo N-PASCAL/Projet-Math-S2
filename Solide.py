@@ -3,15 +3,17 @@ from Matrix import Matrix
 from Tools import pi, cos, sin
 from matplotlib import pyplot as plt
 
+
 def generate_fuselage(n):
     fuselage = Geometry.cylindre(n, R=2.0, h=26)
     X, Y, Z = fuselage
 
     return [Z, Y, X]
 
+
 def generate_cone(n, length, R, reverse=False, offset=0):
     W = []
-    n2 = int(n ** (1/3))
+    n2 = int(n ** (1 / 3))
     for i in range(n2):
         for j in range(n2):
             for k in range(n2):
@@ -24,7 +26,8 @@ def generate_cone(n, length, R, reverse=False, offset=0):
                 W.append([x, y, z])
     return Geometry.transpose(W)
 
-def generate_prism(n, a, b, c, offset=(0,0,0)):
+
+def generate_prism(n, a, b, c, offset=(0, 0, 0)):
     P = Geometry.pave_plein(n, a, b, c)
     for i in range(len(P[0])):
         P[0][i] += offset[0]
@@ -32,30 +35,47 @@ def generate_prism(n, a, b, c, offset=(0,0,0)):
         P[2][i] += offset[2]
     return P
 
-def solide(n):
-    unit = n // 17  
 
-    n_fuselage = 4 * unit        
-    n_cones = 2 * unit          
-    n_ailes = 2 * unit          
-    n_empennages = 2 * unit      
-    n_derive = n - (n_fuselage + 2*n_cones + 2*n_ailes + 2*n_empennages)  
+def generate_trapeze(n, base_large, base_etroite, hauteur, epaisseur, offset=(0, 0, 0)):
+    T = Geometry.trapeze_plein(n, base_large, base_etroite, hauteur, epaisseur)
+    for i in range(len(T[0])):
+        T[0][i] += offset[0]
+        T[1][i] += offset[1]
+        T[2][i] += offset[2]
+    return T
+
+
+def generate_trapeze_custom(n, p1, p2, p3, p4, epaisseur):
+    T = Geometry.trapeze_volume(n, p1, p2, p3, p4, epaisseur)
+    return T
+
+
+def solide(n):
+    unit = n // 17
+
+    n_fuselage = 4 * unit
+    n_cones = 2 * unit
+    n_ailes = 2 * unit
+    n_empennages = 2 * unit
+    n_derive = n - (n_fuselage + 2 * n_cones + 2 * n_ailes + 2 * n_empennages)
 
     fuselage = generate_fuselage(n_fuselage)
 
     cone_av = generate_cone(n_cones, length=6.5, R=2.0, reverse=True, offset=-13)
     cone_ar = generate_cone(n_cones, length=7.0, R=2.0, reverse=False, offset=12)
 
-    aile_g = generate_prism(n_ailes, 5.5, 15.0, 0.5, offset=(0, 10, 0))  
-    aile_d = generate_prism(n_ailes, 5.5, 15.0, 0.5, offset=(0, -8, 0))   
+    aile_g = generate_trapeze_custom(n_ailes, p1=[0, 2, 0], p2=[5.5, 2, 0], p3=[2.75, 13.5, 0], p4=[0, 15, 0],
+                                     epaisseur=0.5)
+    aile_d = generate_trapeze_custom(n_ailes, p1=[0, -2, 0], p2=[5.5, -2, 0], p3=[2.75, -13.5, 0], p4=[0, -15, 0],
+                                     epaisseur=0.5)
 
+    emp_g = generate_trapeze_custom(n_empennages, p1=[-13, 2, 0], p2=[-10.5, 2, 0], p3=[-11.75, 5.5, 0],
+                                    p4=[-13, 6.5, 0], epaisseur=0.5)
+    emp_d = generate_trapeze_custom(n_empennages, p1=[-13, -2, 0], p2=[-10.5, -2, 0], p3=[-11.75, -5.5, 0],
+                                    p4=[-13, -6.5, 0], epaisseur=0.5)
 
-    emp_g = generate_prism(n_empennages, 2.5, 6.5, 0.5, offset=(-12, 6, -0))
-    emp_d = generate_prism(n_empennages, 2.5, 6.5, 0.5, offset=(-12, -6, 0))
-
-
-    derive = generate_prism(n_derive, 5.5, 0.5, 4.375, offset=(-11, 0, 4))
-
+    derive = generate_trapeze_custom(n_derive, p1=[-13, 0, 2], p2=[-13, 0, 7], p3=[-10.25, 0, 5.75], p4=[-7.5, 0, 2],
+                                     epaisseur=0.5)
 
     all_parts = [fuselage, cone_av, cone_ar, aile_g, aile_d, emp_g, emp_d, derive]
     X, Y, Z = [], [], []
@@ -66,8 +86,11 @@ def solide(n):
 
     return Matrix([X, Y, Z])
 
+
 def plot_solide(n):
     M = solide(n)
+    M = M.rotate('z', pi / 4)
+
     X, Y, Z = M.data
 
     fig = plt.figure()
@@ -79,18 +102,16 @@ def plot_solide(n):
     ax.set_zlabel('Z')
     ax.set_title(f'Solide réaliste - {n} points')
 
-    
-    ax.set_box_aspect([55, 40, 10])  
+    ax.set_box_aspect([55, 40, 10])
     ax.set_xlim(-30, 30)
-    ax.set_ylim(-25, 25) 
+    ax.set_ylim(-25, 25)
     ax.set_zlim(-5, 5)
 
     plt.tight_layout()
     plt.show()
 
 
-
-#-----------------------------------------------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------------------------------------------#
 
 def deplace_mat(I, m, G, A):
     if len(I) != 3 or any(len(row) != 3 for row in I):
@@ -109,9 +130,11 @@ def deplace_mat(I, m, G, A):
 
     return IA
 
+
 m = 5.0
 G = [0.0, 0.0, 0.0]
 A = [1.0, 2.0, 3.0]
+
 
 def calcul_inertie_totale(blocs):
     """
@@ -142,6 +165,7 @@ def calcul_inertie_totale(blocs):
 
     return I_totale, A
 
+
 def centre_geometrique(part):
     """
     Calcule le centre de masse géométrique d’un solide 3D défini par ses coordonnées [X, Y, Z]
@@ -155,7 +179,8 @@ def centre_geometrique(part):
     zG = sum(Z) / n
     return [xG, yG, zG]
 
-#-----------------------------------------------------------------------------------------------------------------#
+
+# -----------------------------------------------------------------------------------------------------------------#
 
 
 def interactive_plot(n):
@@ -172,9 +197,9 @@ def interactive_plot(n):
 
     def on_key(event):
         nonlocal M
-        angle = pi / 36 
-        step = 1.0     
-        
+        angle = pi / 36
+        step = 1.0
+
         match event.key:
             case 'left':
                 M = M.rotate('z', angle)
@@ -195,14 +220,13 @@ def interactive_plot(n):
             case 'r':
                 M = solide(n)
             case _:
-                return  
+                return
 
         update_display()
 
-
-    ax.set_box_aspect([55, 40, 10])  
+    ax.set_box_aspect([55, 40, 10])
     ax.set_xlim(-30, 30)
-    ax.set_ylim(-25, 25) 
+    ax.set_ylim(-25, 25)
     ax.set_zlim(-5, 5)
 
     fig.canvas.mpl_connect('key_press_event', on_key)
@@ -212,9 +236,9 @@ def interactive_plot(n):
     n_cones = 2 * unit
     n_ailes = 2 * unit
     n_empennages = 2 * unit
-    n_derive = n - (n_fuselage + 2*n_cones + 2*n_ailes + 2*n_empennages)
+    n_derive = n - (n_fuselage + 2 * n_cones + 2 * n_ailes + 2 * n_empennages)
 
-    figure_id =   2
+    figure_id = 2
 
     match figure_id:
         case 0:  # Fuselage
@@ -224,13 +248,15 @@ def interactive_plot(n):
             m = 1000
 
         case 1:  # Aile gauche
-            part = generate_trapeze_custom(n_ailes, p1=[0, 2, 0], p2=[5.5, 2, 0], p3=[2.75, 13.5, 0], p4=[0, 15, 0], epaisseur=0.5)
+            part = generate_trapeze_custom(n_ailes, p1=[0, 2, 0], p2=[5.5, 2, 0], p3=[2.75, 13.5, 0], p4=[0, 15, 0],
+                                           epaisseur=0.5)
             G = centre_geometrique(part)
             I = [[20, 0, 0], [0, 35, 0], [0, 0, 15]]
             m = 300
 
         case 2:  # Aile droite
-            part = generate_trapeze_custom(n_ailes, p1=[0, -2, 0], p2=[5.5, -2, 0], p3=[2.75, -13.5, 0], p4=[0, -15, 0], epaisseur=0.5)
+            part = generate_trapeze_custom(n_ailes, p1=[0, -2, 0], p2=[5.5, -2, 0], p3=[2.75, -13.5, 0], p4=[0, -15, 0],
+                                           epaisseur=0.5)
             G = centre_geometrique(part)
             I = [[20, 0, 0], [0, 35, 0], [0, 0, 15]]
             m = 300
@@ -248,20 +274,21 @@ def interactive_plot(n):
             m = 180
 
         case 5:  # Empennage gauche
-            part = generate_trapeze_custom(n_ailes, p1=[-13, 2, 0], p2=[-10.5, 2, 0], p3=[-11.75, 5.5, 0], p4=[-13, 6.5, 0], epaisseur=0.5)
+            part = generate_trapeze_custom(n_ailes, p1=[-13, 2, 0], p2=[-10.5, 2, 0], p3=[-11.75, 5.5, 0],
+                                           p4=[-13, 6.5, 0], epaisseur=0.5)
             G = centre_geometrique(part)
             I = [[15, 0, 0], [0, 18, 0], [0, 0, 8]]
             m = 150
 
         case 6:  # Dérive
-            part = generate_trapeze_custom(n_cones, p1=[-13, 0, 2], p2=[-13, 0, 7], p3=[-10.25, 0, 5.75], p4=[-7.5, 0, 2], epaisseur=0.5)
+            part = generate_trapeze_custom(n_cones, p1=[-13, 0, 2], p2=[-13, 0, 7], p3=[-10.25, 0, 5.75],
+                                           p4=[-7.5, 0, 2], epaisseur=0.5)
             G = centre_geometrique(part)
             I = [[10, 0, 0], [0, 12, 0], [0, 0, 6]]
             m = 120
 
         case _:
             raise ValueError("ID de figure non reconnu (0 à 6)")
-
 
     blocs = [{"m": m, "I": I, "G": G}]
     plane = []
@@ -301,14 +328,16 @@ def interactive_plot(n):
         "G": centre_geometrique(part)
     })
 
-    part = generate_trapeze_custom(n_empennages, [-13, 2, 0], [-10.5, 2, 0], [-11.75, 5.5, 0], [-13, 6.5, 0], epaisseur=0.5)
+    part = generate_trapeze_custom(n_empennages, [-13, 2, 0], [-10.5, 2, 0], [-11.75, 5.5, 0], [-13, 6.5, 0],
+                                   epaisseur=0.5)
     plane.append({
         "m": 150,
         "I": [[15, 0, 0], [0, 18, 0], [0, 0, 8]],
         "G": centre_geometrique(part)
     })
 
-    part = generate_trapeze_custom(n_empennages, [-13, -2, 0], [-10.5, -2, 0], [-11.75, -5.5, 0], [-13, -6.5, 0], epaisseur=0.5)
+    part = generate_trapeze_custom(n_empennages, [-13, -2, 0], [-10.5, -2, 0], [-11.75, -5.5, 0], [-13, -6.5, 0],
+                                   epaisseur=0.5)
     plane.append({
         "m": 150,
         "I": [[15, 0, 0], [0, 18, 0], [0, 0, 8]],
@@ -322,13 +351,11 @@ def interactive_plot(n):
         "G": centre_geometrique(part)
     })
 
-
-
     I_totale, centre_masse_global = calcul_inertie_totale(plane)
 
-    test_bloc = blocs[0]  
+    test_bloc = blocs[0]
     G = test_bloc["G"]
-    A = [coord + 3 for coord in G] 
+    A = [coord + 3 for coord in G]
 
     I_moved = deplace_mat(test_bloc["I"], test_bloc["m"], G, A)
     print("Inertie déplacée vers A =", A)
@@ -337,8 +364,6 @@ def interactive_plot(n):
 
     ax.scatter(*G, color='blue', s=40, label=f"G bloc {figure_id}")
     ax.text(*G, f"G{figure_id}", color='blue')
-
-
 
     ax.scatter(*A, color='green', s=40, label="A (point déplacé)")
     ax.text(*A, " A", color='green')
@@ -354,7 +379,6 @@ def interactive_plot(n):
 
     ax.plot([G[0], A[0]], [G[1], A[1]], [G[2], A[2]], color='black', linestyle='--')
 
-
     print("Centre de masse global A :", centre_masse_global)
     print("Inertie totale au point A :")
     for row in I_totale:
@@ -369,4 +393,4 @@ def interactive_plot(n):
     plt.title("Utilise les flèches pour faire pivoter l'avion")
     plt.show()
 
-#-----------------------------------------------------------------------------------------------------------------#
+# -----------------------------------------------------------------------------------------------------------------#
