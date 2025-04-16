@@ -238,6 +238,7 @@ def interactive_plot(n):
     n_empennages = 2 * unit
     n_derive = n - (n_fuselage + 2 * n_cones + 2 * n_ailes + 2 * n_empennages)
 
+    show_debug = False
     figure_id = 2
 
     match figure_id:
@@ -362,35 +363,37 @@ def interactive_plot(n):
     for row in I_moved:
         print(row)
 
-    ax.scatter(*G, color='blue', s=40, label=f"G bloc {figure_id}")
-    ax.text(*G, f"G{figure_id}", color='blue')
+    if show_debug:
+        ax.scatter(*G, color='blue', s=40, label=f"G bloc {figure_id}")
+        ax.text(*G, f"G{figure_id}", color='blue')
 
-    ax.scatter(*A, color='green', s=40, label="A (point déplacé)")
-    ax.text(*A, " A", color='green')
+        ax.scatter(*A, color='green', s=40, label="A (point déplacé)")
+        ax.text(*A, " A", color='green')
 
-    def format_matrix(M):
-        return "\n".join(["[" + ", ".join(f"{v:.1f}" for v in row) + "]" for row in M])
+        def format_matrix(M):
+            return "\n".join(["[" + ", ".join(f"{v:.1f}" for v in row) + "]" for row in M])
 
-    text_G = f"G : I_G =\n{format_matrix(test_bloc['I'])}"
-    text_A = f"A : I_A =\n{format_matrix(I_moved)}"
+        text_G = f"G : I_G =\n{format_matrix(test_bloc['I'])}"
+        text_A = f"A : I_A =\n{format_matrix(I_moved)}"
 
-    ax.text(G[0], G[1], G[2] + 1, text_G, fontsize=7, color='blue')
-    ax.text(A[0], A[1], A[2] + 1, text_A, fontsize=7, color='green')
+        ax.text(G[0], G[1], G[2] + 1, text_G, fontsize=7, color='blue')
+        ax.text(A[0], A[1], A[2] + 1, text_A, fontsize=7, color='green')
 
-    ax.plot([G[0], A[0]], [G[1], A[1]], [G[2], A[2]], color='black', linestyle='--')
+        ax.plot([G[0], A[0]], [G[1], A[1]], [G[2], A[2]], color='black', linestyle='--')
+
+        ax.scatter(*centre_masse_global, color='red', s=60, label="Centre de masse global")
+        ax.text(*centre_masse_global, " A", color='red')
 
     print("Centre de masse global A :", centre_masse_global)
     print("Inertie totale au point A :")
     for row in I_totale:
         print(row)
 
-    ax.scatter(*centre_masse_global, color='red', s=60, label="Centre de masse global")
-    ax.text(*centre_masse_global, " A", color='red')
 
     ax.legend()
     ax.grid(True)
 
-    plt.title("Utilise les flèches pour faire pivoter l'avion")
+    plt.title("Fleche pour tourner / Numpad (5123) pour se déplacer :")
     plt.show()
 
 # -----------------------------------------------------------------------------------------------------------------#
